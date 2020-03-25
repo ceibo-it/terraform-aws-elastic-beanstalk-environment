@@ -111,7 +111,6 @@ For a complete example, see [examples/complete](examples/complete)
 | additional_security_groups | List of security groups to be allowed to connect to the EC2 instances | list(string) | `<list>` | no |
 | additional_settings | Additional Elastic Beanstalk setttings. For full list of options, see https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html | object | `<list>` | no |
 | alb_zone_id | ALB zone id | map(string) | `<map>` | no |
-| allowed_security_groups | List of security groups to add to the EC2 instances | list(string) | `<list>` | no |
 | application_port | Port application is listening on | number | `80` | no |
 | application_subnets | List of subnets to place EC2 instances | list(string) | - | yes |
 | associate_public_ip_address | Whether to associate public IP addresses to the instances | bool | `false` | no |
@@ -166,7 +165,6 @@ For a complete example, see [examples/complete](examples/complete)
 | solution_stack_name | Elastic Beanstalk stack, e.g. Docker, Go, Node, Java, IIS. For more info, see https://docs.aws.amazon.com/elasticbeanstalk/latest/platforms/platforms-supported.html | string | - | yes |
 | ssh_listener_enabled | Enable SSH port | bool | `false` | no |
 | ssh_listener_port | SSH port | number | `22` | no |
-| ssh_source_restriction | Used to lock down SSH access to the EC2 instances | string | `0.0.0.0/0` | no |
 | stage | Stage, e.g. 'prod', 'staging', 'dev', or 'test' | string | `` | no |
 | tags | Additional tags (e.g. `map('BusinessUnit`,`XYZ`) | map(string) | `<map>` | no |
 | tier | Elastic Beanstalk Environment tier, 'WebServer' or 'Worker' | string | `WebServer` | no |
