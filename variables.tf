@@ -73,12 +73,6 @@ variable "dns_subdomain" {
   description = "The subdomain to create on Route53 for the EB environment. For the subdomain to be created, the `dns_zone_id` variable must be set as well"
 }
 
-variable "allowed_security_groups" {
-  type        = list(string)
-  description = "List of security groups to add to the EC2 instances"
-  default     = []
-}
-
 variable "additional_security_groups" {
   type        = list(string)
   description = "List of security groups to be allowed to connect to the EC2 instances"
@@ -362,12 +356,6 @@ variable "elb_scheme" {
   type        = string
   default     = "public"
   description = "Specify `internal` if you want to create an internal load balancer in your Amazon VPC so that your Elastic Beanstalk application cannot be accessed from outside your Amazon VPC"
-}
-
-variable "ssh_source_restriction" {
-  type        = string
-  default     = "0.0.0.0/0"
-  description = "Used to lock down SSH access to the EC2 instances"
 }
 
 variable "ssh_listener_enabled" {
