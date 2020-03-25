@@ -111,6 +111,7 @@ For a complete example, see [examples/complete](examples/complete)
 | additional_security_groups | List of security groups to be allowed to connect to the EC2 instances | list(string) | `<list>` | no |
 | additional_settings | Additional Elastic Beanstalk setttings. For full list of options, see https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html | object | `<list>` | no |
 | alb_zone_id | ALB zone id | map(string) | `<map>` | no |
+| allowed_security_groups | List of security groups to add to the EC2 instances | list(string) | `<list>` | no |
 | application_port | Port application is listening on | number | `80` | no |
 | application_subnets | List of subnets to place EC2 instances | list(string) | - | yes |
 | associate_public_ip_address | Whether to associate public IP addresses to the instances | bool | `false` | no |
@@ -125,6 +126,7 @@ For a complete example, see [examples/complete](examples/complete)
 | autoscale_upper_bound | Maximum level of autoscale metric to add an instance | number | `80` | no |
 | autoscale_upper_increment | How many Amazon EC2 instances to add when performing a scaling activity | number | `1` | no |
 | availability_zone_selector | Availability Zone selector | string | `Any 2` | no |
+| default_security_group_enabled | Enable default security group with allowed_security_groups in inbound rules, and allowing all for outbound | bool | `true` | no |
 | delimiter | Delimiter to be used between `name`, `namespace`, `stage`, etc. | string | `-` | no |
 | description | Short description of the Environment | string | `` | no |
 | dns_subdomain | The subdomain to create on Route53 for the EB environment. For the subdomain to be created, the `dns_zone_id` variable must be set as well | string | `` | no |

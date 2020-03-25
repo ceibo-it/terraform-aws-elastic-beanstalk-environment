@@ -298,6 +298,30 @@ resource "aws_iam_instance_profile" "ec2" {
   role = aws_iam_role.ec2.name
 }
 
+resource "aws_security_group" "default" {
+  count       = var.default_security_group_enabled ? 1 : 0
+  name        = module.label.id
+  description = "Allow inbound traffic from provided Security Groups"
+
+  vpc_id = var.vpc_id
+
+  ingress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = -1
+    security_groups = var.allowed_security_groups
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = module.label.tags
+}
+
 locals {
   // Remove `Name` tag from the map of tags because Elastic Beanstalk generates the `Name` tag automatically
   // and if it is provided, terraform tries to recreate the application on each `plan/apply`
@@ -511,7 +535,7 @@ resource "aws_elastic_beanstalk_environment" "default" {
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "SecurityGroups"
-    value     = join(",", compact(var.additional_security_groups))
+    value     = join(",", compact(concat(aws_security_group.default.*.id, var.additional_security_groups)))
   }
 
   setting {
