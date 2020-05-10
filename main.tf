@@ -338,32 +338,17 @@ locals {
     {
       namespace = "aws:ec2:vpc"
       name      = "ELBSubnets"
-      value     = join(",", var.loadbalancer_subnets)
+      value     = join(",", sort(var.loadbalancer_subnets))
     },
     {
       namespace = "aws:elb:loadbalancer"
       name      = "SecurityGroups"
-      value     = join(",", var.loadbalancer_security_groups)
+      value     = join(",", sort(var.loadbalancer_security_groups))
     },
     {
       namespace = "aws:elb:loadbalancer"
       name      = "ManagedSecurityGroup"
       value     = var.loadbalancer_managed_security_group
-    },
-    {
-      namespace = "aws:elb:listener"
-      name      = "ListenerProtocol"
-      value     = "HTTP"
-    },
-    {
-      namespace = "aws:elb:listener"
-      name      = "InstancePort"
-      value     = var.application_port
-    },
-    {
-      namespace = "aws:elb:listener"
-      name      = "ListenerEnabled"
-      value     = var.http_listener_enabled || var.loadbalancer_certificate_arn == "" ? "true" : "false"
     },
     {
       namespace = "aws:elb:listener:443"
@@ -411,50 +396,60 @@ locals {
       value     = "true"
     },
     {
-      namespace = "aws:elbv2:loadbalancer"
-      name      = "AccessLogsS3Bucket"
-      value     = join("", aws_s3_bucket.elb_logs.*.id)
+      namespace = "aws:elb:policies"
+      name      = "Stickiness Cookie Expiration"
+      value     = var.stickiness_cookie_duration
     },
     {
-      namespace = "aws:elbv2:loadbalancer"
-      name      = "AccessLogsS3Enabled"
-      value     = "true"
+      namespace = "aws:elb:policies"
+      name      = "Stickiness Policy"
+      value     = var.stickiness_enabled
     },
-    {
-      namespace = "aws:elbv2:loadbalancer"
-      name      = "SecurityGroups"
-      value     = join(",", var.loadbalancer_security_groups)
-    },
-    {
-      namespace = "aws:elbv2:loadbalancer"
-      name      = "ManagedSecurityGroup"
-      value     = var.loadbalancer_managed_security_group
-    },
-    {
-      namespace = "aws:elbv2:listener:default"
-      name      = "ListenerEnabled"
-      value     = var.http_listener_enabled || var.loadbalancer_certificate_arn == "" ? "true" : "false"
-    },
-    {
-      namespace = "aws:elbv2:listener:443"
-      name      = "ListenerEnabled"
-      value     = var.loadbalancer_certificate_arn == "" ? "false" : "true"
-    },
-    {
-      namespace = "aws:elbv2:listener:443"
-      name      = "Protocol"
-      value     = "HTTPS"
-    },
-    {
-      namespace = "aws:elbv2:listener:443"
-      name      = "SSLCertificateArns"
-      value     = var.loadbalancer_certificate_arn
-    },
-    {
-      namespace = "aws:elbv2:listener:443"
-      name      = "SSLPolicy"
-      value     = var.loadbalancer_type == "application" ? var.loadbalancer_ssl_policy : ""
-    },
+    # {
+    #   namespace = "aws:elbv2:loadbalancer"
+    #   name      = "AccessLogsS3Bucket"
+    #   value     = var.loadbalancer_type == "application" ? join("", sort(aws_s3_bucket.elb_logs.*.id)) : ""
+    # },
+    # {
+    #   namespace = "aws:elbv2:loadbalancer"
+    #   name      = "AccessLogsS3Enabled"
+    #   value     = var.loadbalancer_type == "application" ? "true" : ""
+    # },
+    # {
+    #   namespace = "aws:elbv2:loadbalancer"
+    #   name      = "SecurityGroups"
+    #   value     = var.loadbalancer_type == "application" ? join(",", sort(var.loadbalancer_security_groups)) : ""
+    # },
+    # {
+    #   namespace = "aws:elbv2:loadbalancer"
+    #   name      = "ManagedSecurityGroup"
+    #   value     = var.loadbalancer_type == "application" ? var.loadbalancer_managed_security_group : ""
+    # },
+    # {
+    #   namespace = "aws:elbv2:listener:default"
+    #   name      = "ListenerEnabled"
+    #   value     = var.loadbalancer_type == "application" && var.http_listener_enabled || var.loadbalancer_certificate_arn == "" ? "true" : "false"
+    # },
+    # {
+    #   namespace = "aws:elbv2:listener:443"
+    #   name      = "ListenerEnabled"
+    #   value     = var.loadbalancer_certificate_arn == "" ? "false" : "true"
+    # },
+    # {
+    #   namespace = "aws:elbv2:listener:443"
+    #   name      = "Protocol"
+    #   value     = var.loadbalancer_type == "application" ? "HTTPS" : ""
+    # },
+    # {
+    #   namespace = "aws:elbv2:listener:443"
+    #   name      = "SSLCertificateArns"
+    #   value     = var.loadbalancer_type == "application" ? var.loadbalancer_certificate_arn : ""
+    # },
+    # {
+    #   namespace = "aws:elbv2:listener:443"
+    #   name      = "SSLPolicy"
+    #   value     = var.loadbalancer_type == "application" ? var.loadbalancer_ssl_policy : ""
+    # },
     {
       namespace = "aws:ec2:vpc"
       name      = "ELBScheme"
@@ -465,26 +460,41 @@ locals {
       name      = "LoadBalancerType"
       value     = var.loadbalancer_type
     },
+    {
+      namespace = "aws:elasticbeanstalk:application"
+      name      = "Application Healthcheck URL"
+      value     = var.healthcheck_url
+    }
 
     ###===================== Application Load Balancer Health check settings =====================================================###
     # The Application Load Balancer health check does not take into account the Elastic Beanstalk health check path
     # http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-applicationloadbalancer.html
     # http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-applicationloadbalancer.html#alb-default-process.config
-    {
-      namespace = "aws:elasticbeanstalk:environment:process:default"
-      name      = "HealthCheckPath"
-      value     = var.healthcheck_url
-    },
-    {
-      namespace = "aws:elasticbeanstalk:environment:process:default"
-      name      = "Port"
-      value     = var.application_port
-    },
-    {
-      namespace = "aws:elasticbeanstalk:environment:process:default"
-      name      = "Protocol"
-      value     = "HTTP"
-    }
+    # {
+    #   namespace = "aws:elasticbeanstalk:environment:process:default"
+    #   name      = "HealthCheckPath"
+    #   value     = var.healthcheck_url
+    # }
+    # {
+    #   namespace = "aws:elasticbeanstalk:environment:process:default"
+    #   name      = "Port"
+    #   value     = var.application_port
+    # },
+    # {
+    #   namespace = "aws:elasticbeanstalk:environment:process:default"
+    #   name      = "Protocol"
+    #   value     = "HTTP"
+    # },
+    # {
+    #   namespace = "aws:elasticbeanstalk:environment:process:default"
+    #   name      = "StickinessEnabled"
+    #   value     = var.stickiness_enabled ? "true" : "false"
+    # },
+    # {
+    #   namespace = "aws:elasticbeanstalk:environment:process:default"
+    #   name      = "StickinessLBCookieDuration"
+    #   value     = var.stickiness_cookie_duration
+    # }
   ]
 
   # If the tier is "WebServer" add the elb_settings, otherwise exclude them
@@ -529,13 +539,13 @@ resource "aws_elastic_beanstalk_environment" "default" {
   setting {
     namespace = "aws:ec2:vpc"
     name      = "Subnets"
-    value     = join(",", var.application_subnets)
+    value     = join(",", sort(var.application_subnets))
   }
 
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "SecurityGroups"
-    value     = join(",", compact(concat(aws_security_group.default.*.id, var.additional_security_groups)))
+    value     = join(",", sort(compact(concat(aws_security_group.default.*.id, var.additional_security_groups))))
   }
 
   setting {
@@ -559,7 +569,7 @@ resource "aws_elastic_beanstalk_environment" "default" {
   setting {
     namespace = "aws:elasticbeanstalk:environment"
     name      = "ServiceRole"
-    value     = aws_iam_role.service.name
+    value     = aws_iam_role.service.arn
   }
 
   setting {
