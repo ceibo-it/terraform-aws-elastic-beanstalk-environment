@@ -226,9 +226,21 @@ variable "healthcheck_url" {
   description = "Application Health Check URL. Elastic Beanstalk will call this URL to check the health of the application running on EC2 instances"
 }
 
-variable "enable_log_publication_control" {
+variable "stickiness_enabled" {
   type        = bool
   default     = false
+  description = "Set to true to enable sticky sessions in the load balancer."
+}
+
+variable "stickiness_cookie_duration" {
+  type        = number
+  default     = 86400
+  description = "Lifetime, in seconds, of the sticky session cookie."
+}
+
+variable "enable_log_publication_control" {
+  type        = bool
+  default     = true
   description = "Copy the log files for your application's Amazon EC2 instances to the Amazon S3 bucket associated with your application"
 }
 
