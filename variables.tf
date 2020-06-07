@@ -73,6 +73,12 @@ variable "dns_subdomain" {
   description = "The subdomain to create on Route53 for the EB environment. For the subdomain to be created, the `dns_zone_id` variable must be set as well"
 }
 
+variable "dns_evaluate_target_health" {
+  type        = string
+  description = "Valid only when alias=true. Set to true if you want Route 53 to determine whether to respond to DNS queries using this resource record set by checking the health of the resource record set. "
+  default     = false
+}
+
 variable "allowed_security_groups" {
   type        = list(string)
   description = "List of security groups to add to the EC2 instances"
