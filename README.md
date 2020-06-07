@@ -111,6 +111,7 @@ For a complete example, see [examples/complete](examples/complete)
 | additional_security_groups | List of security groups to be allowed to connect to the EC2 instances | list(string) | `<list>` | no |
 | additional_settings | Additional Elastic Beanstalk setttings. For full list of options, see https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html | object | `<list>` | no |
 | allowed_security_groups | List of security groups to add to the EC2 instances | list(string) | `<list>` | no |
+| ami_id | The id of the AMI to associate with the Amazon EC2 instances | string | `null` | no |
 | application_port | Port application is listening on | number | `80` | no |
 | application_subnets | List of subnets to place EC2 instances | list(string) | - | yes |
 | associate_public_ip_address | Whether to associate public IP addresses to the instances | bool | `false` | no |

@@ -416,3 +416,9 @@ variable "env_vars" {
   default     = {}
   description = "Map of custom ENV variables to be provided to the application running on Elastic Beanstalk, e.g. env_vars = { DB_USER = 'admin' DB_PASS = 'xxxxxx' }"
 }
+
+variable "ami_id" {
+  type        = string
+  default     = null
+  description = "The id of the AMI to associate with the Amazon EC2 instances"
+}
