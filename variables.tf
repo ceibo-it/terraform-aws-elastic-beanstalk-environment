@@ -26,6 +26,12 @@ variable "delimiter" {
   description = "Delimiter to be used between `name`, `namespace`, `stage`, etc."
 }
 
+variable "environment" {
+  type        = string
+  default     = ""
+  description = "Environment, e.g. 'prod', 'staging', 'dev', 'pre-prod', 'UAT'"
+}
+
 variable "attributes" {
   type        = list(string)
   default     = []
@@ -85,16 +91,16 @@ variable "allowed_security_groups" {
   default     = []
 }
 
-variable "default_security_group_enabled" {
-  type        = bool
-  default     = true
-  description = "Enable default security group with allowed_security_groups in inbound rules, and allowing all for outbound"
-}
-
 variable "additional_security_groups" {
   type        = list(string)
   description = "List of security groups to be allowed to connect to the EC2 instances"
   default     = []
+}
+
+variable "default_security_group_enabled" {
+  type        = bool
+  default     = true
+  description = "Enable default security group with allowed_security_groups in inbound rules, and allowing all for outbound"
 }
 
 variable "vpc_id" {
@@ -125,10 +131,46 @@ variable "instance_type" {
   description = "Instances type"
 }
 
+variable "enable_spot_instances" {
+  type        = bool
+  default     = false
+  description = "Enable Spot Instance requests for your environment"
+}
+
+variable "spot_fleet_on_demand_base" {
+  type        = number
+  default     = 0
+  description = "The minimum number of On-Demand Instances that your Auto Scaling group provisions before considering Spot Instances as your environment scales up. This option is relevant only when enable_spot_instances is true."
+}
+
+variable "spot_fleet_on_demand_above_base_percentage" {
+  type        = number
+  default     = -1
+  description = "The percentage of On-Demand Instances as part of additional capacity that your Auto Scaling group provisions beyond the SpotOnDemandBase instances. This option is relevant only when enable_spot_instances is true."
+}
+
+variable "spot_max_price" {
+  type        = number
+  default     = -1
+  description = "The maximum price per unit hour, in US$, that you're willing to pay for a Spot Instance. This option is relevant only when enable_spot_instances is true. Valid values are between 0.001 and 20.0"
+}
+
 variable "enhanced_reporting_enabled" {
   type        = bool
   default     = true
   description = "Whether to enable \"enhanced\" health reporting for this environment.  If false, \"basic\" reporting is used.  When you set this to false, you must also set `enable_managed_actions` to false"
+}
+
+variable "stickiness_enabled" {
+  type        = bool
+  default     = false
+  description = "Set to true to enable sticky sessions in the load balancer."
+}
+
+variable "stickiness_cookie_duration" {
+  type        = number
+  default     = 86400
+  description = "Lifetime, in seconds, of the sticky session cookie."
 }
 
 variable "managed_actions_enabled" {
@@ -230,18 +272,6 @@ variable "healthcheck_url" {
   type        = string
   default     = "/healthcheck"
   description = "Application Health Check URL. Elastic Beanstalk will call this URL to check the health of the application running on EC2 instances"
-}
-
-variable "stickiness_enabled" {
-  type        = bool
-  default     = false
-  description = "Set to true to enable sticky sessions in the load balancer."
-}
-
-variable "stickiness_cookie_duration" {
-  type        = number
-  default     = 86400
-  description = "Lifetime, in seconds, of the sticky session cookie."
 }
 
 variable "enable_log_publication_control" {

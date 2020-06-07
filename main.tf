@@ -1,11 +1,12 @@
 module "label" {
-  source     = "git::https://github.com/ceibo-it/terraform-null-label.git?ref=tags/0.0.1"
-  namespace  = var.namespace
-  name       = var.name
-  stage      = var.stage
-  delimiter  = var.delimiter
-  attributes = var.attributes
-  tags       = var.tags
+  source      = "git::https://github.com/ceibo-it/terraform-null-label.git?ref=tags/0.0.1"
+  namespace   = var.namespace
+  environment = var.environment
+  name        = var.name
+  stage       = var.stage
+  delimiter   = var.delimiter
+  attributes  = var.attributes
+  tags        = var.tags
 }
 
 #
@@ -398,6 +399,11 @@ locals {
     },
     {
       namespace = "aws:elb:policies"
+      name      = "Stickiness Cookie Expiration"
+      value     = var.stickiness_cookie_duration
+    },
+    {
+      namespace = "aws:elb:policies"
       name      = "ConnectionSettingIdleTimeout"
       value     = var.ssh_listener_enabled ? "3600" : "60"
     },
@@ -405,6 +411,11 @@ locals {
       namespace = "aws:elb:policies"
       name      = "ConnectionDrainingEnabled"
       value     = "true"
+    },
+    {
+      namespace = "aws:elb:policies"
+      name      = "Stickiness Policy"
+      value     = var.stickiness_enabled
     },
   ]
   alb_settings = [
@@ -472,6 +483,11 @@ locals {
       name      = "LoadBalancerType"
       value     = var.loadbalancer_type
     },
+    {
+      namespace = "aws:elasticbeanstalk:application"
+      name      = "Application Healthcheck URL"
+      value     = var.healthcheck_url
+    },
 
     ###===================== Application Load Balancer Health check settings =====================================================###
     # The Application Load Balancer health check does not take into account the Elastic Beanstalk health check path
@@ -491,6 +507,16 @@ locals {
       namespace = "aws:elasticbeanstalk:environment:process:default"
       name      = "Protocol"
       value     = "HTTP"
+    },
+    {
+      namespace = "aws:elasticbeanstalk:environment:process:default"
+      name      = "StickinessEnabled"
+      value     = var.stickiness_enabled ? "true" : "false"
+    },
+    {
+      namespace = "aws:elasticbeanstalk:environment:process:default"
+      name      = "StickinessLBCookieDuration"
+      value     = var.stickiness_cookie_duration
     }
   ]
 
@@ -548,7 +574,7 @@ resource "aws_elastic_beanstalk_environment" "default" {
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "SecurityGroups"
-    value     = join(",", compact(concat([aws_security_group.default.id], sort(var.additional_security_groups))))
+    value     = join(",", compact(sort(concat(aws_security_group.default.*.id, var.additional_security_groups))))
     resource  = ""
   }
 
@@ -576,7 +602,7 @@ resource "aws_elastic_beanstalk_environment" "default" {
   setting {
     namespace = "aws:elasticbeanstalk:environment"
     name      = "ServiceRole"
-    value     = aws_iam_role.service.name
+    value     = aws_iam_role.service.arn
     resource  = ""
   }
 
