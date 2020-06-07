@@ -506,6 +506,14 @@ locals {
 # http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html#command-options-general-elasticbeanstalkmanagedactionsplatformupdate
 #
 resource "aws_elastic_beanstalk_environment" "default" {
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to solution_stack_name, and let Beanstalk
+      # do the managed updates.
+      solution_stack_name,
+    ]
+  }
+
   name                   = module.label.id
   application            = var.elastic_beanstalk_application_name
   description            = var.description
