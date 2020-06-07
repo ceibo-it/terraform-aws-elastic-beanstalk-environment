@@ -502,6 +502,8 @@ locals {
 # Full list of options:
 # http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html#command-options-general-elasticbeanstalkmanagedactionsplatformupdate
 #
+data "aws_elastic_beanstalk_hosted_zone" "current" {}
+
 resource "aws_elastic_beanstalk_environment" "default" {
   name                   = module.label.id
   application            = var.elastic_beanstalk_application_name
