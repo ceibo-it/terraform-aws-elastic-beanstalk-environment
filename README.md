@@ -131,6 +131,7 @@ For a complete example, see [examples/complete](examples/complete)
 | description | Short description of the Environment | string | `` | no |
 | dns_subdomain | The subdomain to create on Route53 for the EB environment. For the subdomain to be created, the `dns_zone_id` variable must be set as well | string | `` | no |
 | dns_zone_id | Route53 parent zone ID. The module will create sub-domain DNS record in the parent zone for the EB environment | string | `` | no |
+| dns_evaluate_target_health | Valid only when alias=true. Set to true if you want Route 53 to determine whether to respond to DNS queries using this resource record set by checking the health of the resource record set. | bool | `false` | no |
 | elastic_beanstalk_application_name | Elastic Beanstalk application name | string | - | yes |
 | elb_scheme | Specify `internal` if you want to create an internal load balancer in your Amazon VPC so that your Elastic Beanstalk application cannot be accessed from outside your Amazon VPC | string | `public` | no |
 | enable_log_publication_control | Copy the log files for your application's Amazon EC2 instances to the Amazon S3 bucket associated with your application | bool | `false` | no |
