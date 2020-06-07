@@ -19,7 +19,7 @@ output "security_group_id" {
 }
 
 output "elb_zone_id" {
-  value       = var.alb_zone_id[var.region]
+  value       = data.aws_elastic_beanstalk_hosted_zone.current.id
   description = "ELB zone id"
 }
 
