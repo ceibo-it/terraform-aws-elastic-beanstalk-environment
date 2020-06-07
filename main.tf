@@ -505,6 +505,8 @@ locals {
 # Full list of options:
 # http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/command-options-general.html#command-options-general-elasticbeanstalkmanagedactionsplatformupdate
 #
+data "aws_elastic_beanstalk_hosted_zone" "current" {}
+
 resource "aws_elastic_beanstalk_environment" "default" {
   lifecycle {
     ignore_changes = [
@@ -846,7 +848,7 @@ module "dns_hostname" {
   zone_id                = var.dns_zone_id
   alias                  = true
   alias_name             = aws_elastic_beanstalk_environment.default.cname
-  alias_target_zone_id   = var.alb_zone_id[var.region]
+  alias_target_zone_id   = data.aws_elastic_beanstalk_hosted_zone.current.id
   evaluate_target_health = var.dns_evaluate_target_health
   type                   = "A"
 }
