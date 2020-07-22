@@ -346,22 +346,6 @@ locals {
       name      = "ManagedSecurityGroup"
       value     = var.loadbalancer_managed_security_group
     },
-
-    {
-      namespace = "aws:elb:listener"
-      name      = "ListenerProtocol"
-      value     = "HTTP"
-    },
-    {
-      namespace = "aws:elb:listener"
-      name      = "InstancePort"
-      value     = var.application_port
-    },
-    {
-      namespace = "aws:elb:listener"
-      name      = "ListenerEnabled"
-      value     = var.http_listener_enabled || var.loadbalancer_certificate_arn == "" ? "true" : "false"
-    },
     {
       namespace = "aws:elb:listener:443"
       name      = "ListenerProtocol"
@@ -493,31 +477,36 @@ locals {
     # The Application Load Balancer health check does not take into account the Elastic Beanstalk health check path
     # http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-applicationloadbalancer.html
     # http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-applicationloadbalancer.html#alb-default-process.config
-    {
-      namespace = "aws:elasticbeanstalk:environment:process:default"
-      name      = "HealthCheckPath"
-      value     = var.healthcheck_url
-    },
-    {
-      namespace = "aws:elasticbeanstalk:environment:process:default"
-      name      = "Port"
-      value     = var.application_port
-    },
-    {
-      namespace = "aws:elasticbeanstalk:environment:process:default"
-      name      = "Protocol"
-      value     = "HTTP"
-    },
-    {
-      namespace = "aws:elasticbeanstalk:environment:process:default"
-      name      = "StickinessEnabled"
-      value     = var.stickiness_enabled ? "true" : "false"
-    },
-    {
-      namespace = "aws:elasticbeanstalk:environment:process:default"
-      name      = "StickinessLBCookieDuration"
-      value     = var.stickiness_cookie_duration
-    }
+    # {
+    #   namespace = "aws:elasticbeanstalk:environment:process:default"
+    #   name      = "HealthCheckPath"
+    #   value     = var.healthcheck_url
+    #   resource  = ""
+    # },
+    # {
+    #   namespace = "aws:elasticbeanstalk:environment:process:default"
+    #   name      = "Port"
+    #   value     = var.application_port
+    #   resource  = ""
+    # },
+    # {
+    #   namespace = "aws:elasticbeanstalk:environment:process:default"
+    #   name      = "Protocol"
+    #   value     = "HTTP"
+    #   resource  = ""
+    # },
+    # {
+    #   namespace = "aws:elasticbeanstalk:environment:process:default"
+    #   name      = "StickinessEnabled"
+    #   value     = var.stickiness_enabled ? "true" : "false"
+    #   resource  = ""
+    # },
+    # {
+    #   namespace = "aws:elasticbeanstalk:environment:process:default"
+    #   name      = "StickinessLBCookieDuration"
+    #   value     = var.stickiness_cookie_duration
+    #   resource  = ""
+    # }
   ]
 
   # If the tier is "WebServer" add the elb_settings, otherwise exclude them
@@ -574,7 +563,7 @@ resource "aws_elastic_beanstalk_environment" "default" {
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
     name      = "SecurityGroups"
-    value     = join(",", compact(sort(concat([aws_security_group.default.id], var.additional_security_groups))))
+    value     = join(",", compact(sort(concat(aws_security_group.default.*.id, var.additional_security_groups))))
     resource  = ""
   }
 
@@ -701,6 +690,7 @@ resource "aws_elastic_beanstalk_environment" "default" {
     namespace = "aws:ec2:instances"
     name      = "SpotFleetOnDemandAboveBasePercentage"
     value     = var.spot_fleet_on_demand_above_base_percentage == -1 ? (var.environment_type == "LoadBalanced" ? 70 : 0) : var.spot_fleet_on_demand_above_base_percentage
+    resource  = ""
   }
 
   setting {
