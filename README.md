@@ -128,6 +128,10 @@ For a complete example, see [examples/complete](examples/complete)
 | availability_zone_selector | Availability Zone selector | string | `Any 2` | no |
 | default_security_group_enabled | Enable default security group with allowed_security_groups in inbound rules, and allowing all for outbound | bool | `true` | no |
 | delimiter | Delimiter to be used between `name`, `namespace`, `stage`, etc. | string | `-` | no |
+| deployment_batch_size | Percentage or fixed number of Amazon EC2 instances in the Auto Scaling group on which to simultaneously perform deployments. Valid values vary per deployment_batch_size_type setting | `number` | `1` | no |
+| deployment_batch_size\type | The type of number that is specified in deployment_batch_size_type | `string` | `"Fixed"` | no |
+| deployment_ignore_health_check | Do not cancel a deployment due to failed health checks | `bool` | `false` | no |
+| deployment_timeout | Number of seconds to wait for an instance to complete executing commands | `number` | `600` | no |
 | description | Short description of the Environment | string | `` | no |
 | dns_subdomain | The subdomain to create on Route53 for the EB environment. For the subdomain to be created, the `dns_zone_id` variable must be set as well | string | `` | no |
 | dns_zone_id | Route53 parent zone ID. The module will create sub-domain DNS record in the parent zone for the EB environment | string | `` | no |
