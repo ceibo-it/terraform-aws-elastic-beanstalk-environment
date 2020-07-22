@@ -132,7 +132,7 @@ resource "aws_iam_role_policy_attachment" "ecr_readonly" {
 resource "aws_ssm_activation" "ec2" {
   name               = module.label.id
   iam_role           = aws_iam_role.ec2.id
-  registration_limit = var.autoscale_max
+  registration_limit = var.autoscale_max < 1 ? 1 : var.autoscale_max
 }
 
 data "aws_iam_policy_document" "default" {
@@ -405,7 +405,7 @@ locals {
     {
       namespace = "aws:elb:policies"
       name      = "ConnectionSettingIdleTimeout"
-      value     = var.ssh_listener_enabled ? "3600" : "60"
+      value     = var.ssh_listener_enabled && var.loadbalancer_idle_timeout < 3600 ? "3600" : var.loadbalancer_idle_timeout
     },
     {
       namespace = "aws:elb:policies"

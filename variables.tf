@@ -322,6 +322,12 @@ variable "loadbalancer_managed_security_group" {
   description = "Load balancer managed security group"
 }
 
+variable "loadbalancer_idle_timeout" {
+  type        = number
+  default     = 60
+  description = "Load balancer idle timeout in seconds"
+}
+
 variable "http_listener_enabled" {
   type        = bool
   default     = true
