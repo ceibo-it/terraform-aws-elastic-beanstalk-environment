@@ -520,6 +520,10 @@ locals {
 data "aws_elastic_beanstalk_hosted_zone" "current" {}
 
 resource "aws_elastic_beanstalk_environment" "default" {
+  lifecycle {
+    ignore_changes = [solution_stack_name]
+  }
+
   name                   = module.label.id
   application            = var.elastic_beanstalk_application_name
   description            = var.description
